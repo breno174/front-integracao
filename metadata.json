@@ -1,0 +1,5 @@
+{
+  "name": "Gerenciador de Arquivos Pessoal",
+  "description": "Uma aplicação para gerenciar seus arquivos, fazer upload e gerar pacotes ZIP. Login, cadastro, visualização de arquivos, upload, geração de ZIP e histórico de atividades.",
+  "requestFramePermissions": []
+}
