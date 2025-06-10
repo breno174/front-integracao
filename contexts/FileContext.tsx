@@ -58,10 +58,10 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       alert("Nenhum arquivo para zipar.");
       return;
     }
-    await axios.post(`/api/zips/`, { userId: currentUser.id, zip_name: `${currentUser.username}_arquivos.zip` })
+    await axios.post(`/api/zips`, { user_id: currentUser.id, zip_name: `${currentUser.username}_arquivos.zip` })
       .then(response => {
-        if (response.status === 200) {
-          console.log("ZIP gerado com sucesso!");
+        if (response.status === 201) {
+          alert("ZIP gerado com sucesso!");
         } else {
           console.log("Erro ao gerar o ZIP.");
         }
@@ -75,17 +75,34 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         alert("Erro ao gerar o ZIP.");        
       }
     })
-    const zipContent = files.map(f => `Nome: ${f.name}, Tipo: ${f.type}, Tamanho: ${f.size} bytes`).join('\n');
-    const blob = new Blob([zipContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${currentUser.username}_arquivos.zip.txt`; // Simulate zip with a txt
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    alert("Arquivo ZIP (simulado) baixado!");
+    await axios.get(`/api/zips/download/${currentUser.id}`, { responseType: 'blob' })
+    .then(response => {
+      if (response.status !== 200) {
+        alert("Erro ao gerar o ZIP.");        
+      } else {
+        alert("ZIP baixado com sucesso!");
+        const blob = new Blob([response.data], { type: 'application/zip' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${currentUser.username}_arquivos.zip`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url); 
+      }
+    })
+    // const zipContent = files.map(f => `Nome: ${f.name}, Tipo: ${f.type}, Tamanho: ${f.size} bytes`).join('\n');
+    // const blob = new Blob([zipContent], { type: 'text/plain' });
+    // const url = URL.createObjectURL(blob);
+    // const a = document.createElement('a');
+    // a.href = url;
+    // a.download = `${currentUser.username}_arquivos.zip.txt`; // Simulate zip with a txt
+    // document.body.appendChild(a);
+    // a.click();
+    // document.body.removeChild(a);
+    // URL.revokeObjectURL(url);
+    // alert("Arquivo ZIP (simulado) baixado!");
   }, [files, currentUser]);
   
   const clearFiles = useCallback(() => {

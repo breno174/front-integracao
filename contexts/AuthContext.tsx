@@ -20,7 +20,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = async (username: string, password: string) => {
     const user: User = { id: password, username };
-    setCurrentUser(user);
+    // setCurrentUser(user);
     await axios.post('/api/users/login', { email: username, ip_address: password })
       .then(response => {
         console.log('Login successful:', response.data);
@@ -31,7 +31,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       .catch(error => {
         console.error('Login failed:', error);
       }
-    );
+    ).finally(() => {return;});
     localStorage.setItem('currentUser', JSON.stringify(user));
   };
 

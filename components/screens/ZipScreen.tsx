@@ -27,7 +27,7 @@ export const ZipScreen: React.FC = () => {
   }, [setFiles, addHistoryEntry]);
   const handleGenerateAndDownload = () => {
     if (files.length > 0) {
-      generateZip(); // This function now handles the alert itself
+      generateZip();
       addHistoryEntry("Tentativa de geração de ZIP.", `Arquivos incluídos: ${files.length}`);
     } else {
       alert("Nenhum arquivo disponível para criar um ZIP. Faça upload de alguns arquivos primeiro.");

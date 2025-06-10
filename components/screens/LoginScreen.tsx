@@ -16,14 +16,14 @@ export const LoginScreen: React.FC = () => {
   const { login } = useAuth();
   const { addHistoryEntry } = useHistory();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim()) {
       setError('Nome de usuário é obrigatório.');
       return;
     }
     // Simplified login, no password check
-    login(username, password);
+    await login(username, password);
     addHistoryEntry(`Usuário '${username}' logado.`);
     navigate(AppScreen.FileManagement);
   };
