@@ -32,7 +32,7 @@ export const RegisterScreen: React.FC = () => {
       return;
     }
     // Simplified registration
-    register(username);
+    register(username, password);
     addHistoryEntry(`Novo usuário '${username}' registrado.`);
     navigate(AppScreen.FileManagement);
   };

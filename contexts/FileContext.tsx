@@ -2,12 +2,14 @@
 import React, { createContext, useState, useContext, ReactNode, useCallback } from 'react';
 import { UploadedFile } from '../types';
 import { useAuth } from './AuthContext'; // To namespace files per user
+import axios from '../components/config/api';
 
 interface FileContextType {
   files: UploadedFile[];
   addFile: (file: File) => void;
   generateZip: () => void; // Mock function
   clearFiles: () => void;
+  setFiles: React.Dispatch<React.SetStateAction<UploadedFile[]>>;
 }
 
 const FileContext = createContext<FileContextType | undefined>(undefined);
@@ -50,12 +52,29 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   }, [updateStoredFiles]);
 
-  const generateZip = useCallback(() => {
+  const generateZip = useCallback(async () => {
     // Mock ZIP generation and download
     if (!currentUser || files.length === 0) {
       alert("Nenhum arquivo para zipar.");
       return;
     }
+    await axios.get(`/api/zips/generate/${currentUser.id}`).then(response => {
+      if (response.status !== 200) {
+        alert("Erro ao gerar o ZIP.");        
+      }
+    })
+    await axios.post(`/api/zips/`, { userId: currentUser.id, zip_name: `${currentUser.username}_arquivos.zip` })
+      .then(response => {
+        if (response.status === 200) {
+          console.log("ZIP gerado com sucesso!");
+        } else {
+          console.log("Erro ao gerar o ZIP.");
+        }
+      })
+      .catch(error => {
+        console.error("Erro ao gerar o ZIP:", error);
+        // alert("Erro ao gerar o ZIP.");
+      });
     const zipContent = files.map(f => `Nome: ${f.name}, Tipo: ${f.type}, Tamanho: ${f.size} bytes`).join('\n');
     const blob = new Blob([zipContent], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -78,7 +97,7 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 
   return (
-    <FileContext.Provider value={{ files, addFile, generateZip, clearFiles }}>
+    <FileContext.Provider value={{ files, setFiles, addFile, generateZip, clearFiles }}>
       {children}
     </FileContext.Provider>
   );

@@ -10,7 +10,7 @@ import { AppScreen } from '../../types';
 
 export const LoginScreen: React.FC = () => {
   const [username, setUsername] = useState('');
-  const [password, setPassword] = useState(''); // Password not used in simplified auth
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -23,7 +23,7 @@ export const LoginScreen: React.FC = () => {
       return;
     }
     // Simplified login, no password check
-    login(username);
+    login(username, password);
     addHistoryEntry(`Usuário '${username}' logado.`);
     navigate(AppScreen.FileManagement);
   };

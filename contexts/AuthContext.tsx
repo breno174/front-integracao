@@ -1,12 +1,13 @@
 
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 import { User } from '../types';
+import axios from '../components/config/api';
 
 interface AuthContextType {
   currentUser: User | null;
-  login: (username: string) => void; // Simplified login
+  login: (id: string, username: string) => void;
   logout: () => void;
-  register: (username: string) => void; // Simplified registration
+  register: (id: string, username: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -17,15 +18,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
-  const login = (username: string) => {
-    const user: User = { id: Date.now().toString(), username };
+  const login = async (username: string, password: string) => {
+    const user: User = { id: password, username };
     setCurrentUser(user);
+    await axios.post('/api/users/login', { email: username, ip_address: password })
+      .then(response => {
+        console.log('Login successful:', response.data);
+        const loadUser = { id: response.data.user.id, username: response.data.user.email };
+        setCurrentUser(loadUser);
+      }
+    )
+      .catch(error => {
+        console.error('Login failed:', error);
+      }
+    );
     localStorage.setItem('currentUser', JSON.stringify(user));
   };
 
-  const register = (username: string) => {
-    // In a real app, this would involve API calls and more validation
-    const user: User = { id: Date.now().toString(), username };
+  const register = (username: string, password: string) => {
+    const user: User = { id: password, username };
+    setCurrentUser(user);
+    axios.post('/api/users/login', { email: username, ip_address: password })
+      .then(response => {
+        console.log('Login successful:', response.data);
+      }
+    )
+      .catch(error => {
+        console.error('Login failed:', error);
+      }
+    );
     setCurrentUser(user);
     localStorage.setItem('currentUser', JSON.stringify(user));
   };
