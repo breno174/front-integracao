@@ -58,11 +58,6 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       alert("Nenhum arquivo para zipar.");
       return;
     }
-    await axios.get(`/api/zips/generate/${currentUser.id}`).then(response => {
-      if (response.status !== 200) {
-        alert("Erro ao gerar o ZIP.");        
-      }
-    })
     await axios.post(`/api/zips/`, { userId: currentUser.id, zip_name: `${currentUser.username}_arquivos.zip` })
       .then(response => {
         if (response.status === 200) {
@@ -75,6 +70,11 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.error("Erro ao gerar o ZIP:", error);
         // alert("Erro ao gerar o ZIP.");
       });
+    await axios.get(`/api/zips/generate/${currentUser.id}`).then(response => {
+      if (response.status !== 200) {
+        alert("Erro ao gerar o ZIP.");        
+      }
+    })
     const zipContent = files.map(f => `Nome: ${f.name}, Tipo: ${f.type}, Tamanho: ${f.size} bytes`).join('\n');
     const blob = new Blob([zipContent], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
